@@ -1,0 +1,21 @@
+{
+  "name": "SOC Utility Toolkit",
+  "short_name": "SOC Toolkit",
+  "description": "An offline-first utility toolkit designed for SOC analysts to parse CSVs, format queries, sanitize incident data, and decode payloads securely in-memory.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
