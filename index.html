@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SOC Report & Utility Toolkit</title>
-  
-  <!-- Add this line below -->
   <link rel="manifest" href="./manifest.json">
   <style>
     /* Dark Slate Blue Palette (Default) */
@@ -22,7 +20,6 @@
       --success-bg: #0f2b1d;
       --success-border: #137333;
       --input-bg: #0f172a;
-      --tab-hover-bg: #1e293b;
       --btn-sec-bg: #334155;
       --btn-sec-hover: #475569;
       --danger-bg: #3c1e1e;
@@ -43,7 +40,6 @@
       --success-bg: #dcfce7;
       --success-border: #86efac;
       --input-bg: #f8fafc;
-      --tab-hover-bg: #e2e8f0;
       --btn-sec-bg: #e2e8f0;
       --btn-sec-hover: #cbd5e1;
       --danger-bg: #fee2e2;
@@ -62,6 +58,16 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
+    /* Mobile Drawer Backdrop */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 90;
+    }
+    .sidebar-backdrop.open { display: block; }
+
     /* Left Sidebar Navigation */
     aside {
       width: 250px;
@@ -71,15 +77,22 @@
       flex-direction: column;
       justify-content: space-between;
       flex-shrink: 0;
-      transition: background-color 0.2s ease, border-color 0.2s ease;
+      z-index: 100;
+      transition: transform 0.25s ease, background-color 0.2s ease, border-color 0.2s ease;
     }
 
     .sidebar-header {
-      padding: 20px 18px;
+      padding: 18px;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .brand-title {
@@ -89,10 +102,20 @@
       margin: 0;
     }
 
+    .close-drawer-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
     .nav-menu {
       display: flex;
       flex-direction: column;
-      padding: 16px 10px;
+      padding: 14px 10px;
       gap: 6px;
     }
 
@@ -125,7 +148,7 @@
     }
 
     .sidebar-footer {
-      padding: 18px;
+      padding: 16px 18px;
       border-top: 1px solid var(--border-color);
       font-size: 0.75rem;
       color: var(--text-muted);
@@ -142,7 +165,42 @@
       padding: 4px 10px;
       border-radius: 16px;
       border: 1px solid var(--success-border);
+      margin-top: 8px;
+    }
+
+    .update-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
       margin-top: 10px;
+      padding: 8px 10px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: var(--btn-sec-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .update-btn:hover {
+      background-color: var(--btn-sec-hover);
+    }
+
+    /* Green state when newer version is detected */
+    .update-btn.update-ready {
+      background-color: var(--success-bg);
+      color: var(--success-green);
+      border-color: var(--success-border);
+      animation: pulseGreen 2s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(129, 201, 149, 0.35); }
+      50% { box-shadow: 0 0 0 5px rgba(129, 201, 149, 0); }
     }
 
     /* Main Workspace Canvas */
@@ -151,32 +209,82 @@
       display: flex;
       flex-direction: column;
       overflow-y: auto;
+      min-width: 0;
     }
 
     header {
       background-color: var(--card-bg);
       border-bottom: 1px solid var(--border-color);
-      padding: 16px 32px;
+      padding: 14px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background-color 0.2s ease, border-color 0.2s ease;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .menu-toggle-btn {
+      display: none;
+      background: var(--btn-sec-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    /* Small green dot on mobile hamburger button when update is waiting */
+    .menu-toggle-btn.has-update::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #22c55e;
+      border: 2px solid var(--card-bg);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .page-title {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .theme-toggle-btn {
       background: var(--btn-sec-bg);
       color: var(--text-main);
       border: 1px solid var(--border-color);
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 6px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -184,12 +292,10 @@
       transition: background-color 0.2s ease;
     }
 
-    .theme-toggle-btn:hover {
-      background: var(--btn-sec-hover);
-    }
+    .theme-toggle-btn:hover { background: var(--btn-sec-hover); }
 
     .content-container {
-      padding: 32px;
+      padding: 24px;
       flex: 1;
     }
 
@@ -200,27 +306,26 @@
       background-color: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 24px;
+      padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: background-color 0.2s ease, border-color 0.2s ease;
     }
 
     /* Form Controls */
-    .form-group { margin-bottom: 20px; }
+    .form-group { margin-bottom: 18px; }
 
     label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--text-muted);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     input[type="text"], select, textarea {
       width: 100%;
-      padding: 12px;
+      padding: 11px;
       font-family: monospace;
       font-size: 0.9rem;
       border: 1px solid var(--border-color);
@@ -234,13 +339,13 @@
       border-color: var(--google-blue);
     }
 
-    textarea { height: 180px; resize: vertical; }
+    textarea { height: 170px; resize: vertical; }
 
     /* Drag and Drop Zone */
     .upload-area {
       border: 2px dashed var(--google-blue);
       border-radius: 8px;
-      padding: 32px;
+      padding: 26px 16px;
       text-align: center;
       background: var(--card-bg);
       cursor: pointer;
@@ -248,32 +353,30 @@
       color: var(--text-main);
     }
 
-    .upload-area:hover, .upload-area.dragover {
-      background-color: var(--bg-gray);
-    }
+    .upload-area:hover, .upload-area.dragover { background-color: var(--bg-gray); }
 
     .progress-wrapper { display: none; margin-top: 12px; }
     .progress-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-muted); }
     .progress-bar-bg { width: 100%; height: 8px; background-color: var(--border-color); border-radius: 9999px; overflow: hidden; }
     .progress-bar-fill { height: 100%; width: 0%; background-color: var(--google-blue); border-radius: 9999px; transition: width 0.1s linear; }
 
-    .filter-panel { display: none; margin-top: 16px; background: var(--bg-gray); border: 1px solid var(--border-color); border-radius: 6px; padding: 16px; }
+    .filter-panel { display: none; margin-top: 16px; background: var(--bg-gray); border: 1px solid var(--border-color); border-radius: 6px; padding: 14px; }
     .filter-title { font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     .filter-buttons { display: flex; gap: 6px; }
     .btn-sm { font-size: 11px; padding: 4px 10px; border: 1px solid var(--border-color); background: var(--btn-sec-bg); color: var(--text-main); border-radius: 4px; cursor: pointer; font-weight: 600; }
     .btn-sm:hover { background: var(--btn-sec-hover); }
-    .checkbox-grid { display: flex; flex-wrap: wrap; gap: 8px; max-height: 100px; overflow-y: auto; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color); }
-    .checkbox-item { font-size: 11px; display: flex; align-items: center; gap: 6px; background: var(--btn-sec-bg); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); color: var(--text-main); }
+    .checkbox-grid { display: flex; flex-wrap: wrap; gap: 8px; max-height: 110px; overflow-y: auto; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color); }
+    .checkbox-item { font-size: 11px; display: flex; align-items: center; gap: 6px; background: var(--btn-sec-bg); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); color: var(--text-main); cursor: pointer; }
 
     .controls-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
       background-color: var(--bg-gray);
-      padding: 16px;
+      padding: 14px;
       border-radius: 6px;
       border: 1px solid var(--border-color);
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .checkbox-label {
@@ -285,11 +388,11 @@
       cursor: pointer;
     }
 
-    .actions-bar { display: flex; gap: 10px; margin-top: 16px; }
+    .actions-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 
     button.btn {
-      padding: 10px 18px;
-      font-size: 0.9rem;
+      padding: 9px 16px;
+      font-size: 0.88rem;
       font-weight: 600;
       border: none;
       border-radius: 6px;
@@ -306,53 +409,122 @@
     .btn-danger { background-color: var(--danger-bg); color: var(--google-red); border: 1px solid var(--danger-border); }
     .btn-danger:hover { background-color: var(--google-red); color: #ffffff; }
 
+    .status-banner {
+      font-size: 0.82rem;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 12px;
+      display: none;
+      background: var(--bg-gray);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      gap: 20px;
+    }
+
+    /* Compact Mobile & Narrow Viewport Layout (Off-Canvas Drawer) */
+    @media (max-width: 900px) {
+      aside {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+      }
+      aside.open {
+        transform: translateX(0);
+      }
+      .menu-toggle-btn {
+        display: flex;
+      }
+      .close-drawer-btn {
+        display: block;
+      }
+      header {
+        padding: 10px 14px;
+      }
+      .page-title {
+        font-size: 1rem;
+      }
+      #globalWipeBtn {
+        padding: 7px 10px;
+        font-size: 0.8rem;
+      }
+      .content-container {
+        padding: 14px;
+      }
+      .panel-card {
+        padding: 14px;
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      textarea {
+        height: 145px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Left Navigation Sidebar -->
-  <aside>
+  <!-- Mobile Backdrop Overlay -->
+  <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleDrawer(false)"></div>
+
+  <!-- Left Navigation Sidebar (Collapsible Drawer on Mobile) -->
+  <aside id="appSidebar">
     <div>
       <div class="sidebar-header">
-        <span style="font-size:1.4rem;">🛡️</span>
-        <h1 class="brand-title">SOC Toolkit</h1>
+        <div class="brand-wrap">
+          <span style="font-size:1.35rem;">🛡️</span>
+          <h1 class="brand-title">SOC Toolkit</h1>
+        </div>
+        <button class="close-drawer-btn" onclick="toggleDrawer(false)" aria-label="Close Menu">✕</button>
       </div>
 
       <nav class="nav-menu">
-        <button class="nav-item active" onclick="switchNav(event, 'tab-csv', 'CSV Ticket Comments Extractor')">
+        <button class="nav-item active" onclick="switchNav(event, 'tab-csv', 'CSV Ticket Extractor')">
           <span>📄</span> CSV Extractor
         </button>
-        <button class="nav-item" onclick="switchNav(event, 'tab-formatter', 'Flexible List & SIEM Query Builder')">
+        <button class="nav-item" onclick="switchNav(event, 'tab-formatter', 'Query & List Builder')">
           <span>⚡</span> Query & List Builder
         </button>
-        <button class="nav-item" onclick="switchNav(event, 'tab-masking', 'Data Anonymization Engine')">
+        <button class="nav-item" onclick="switchNav(event, 'tab-masking', 'Anonymizer & Restorer')">
           <span>🔒</span> Anonymizer & Restorer
         </button>
-        <button class="nav-item" onclick="switchNav(event, 'tab-defang', 'IOC Defang & Refang Utility')">
+        <button class="nav-item" onclick="switchNav(event, 'tab-defang', 'IOC Defang / Refang')">
           <span>🌐</span> Defang / Refang
         </button>
-        <button class="nav-item" onclick="switchNav(event, 'tab-decoders', 'Base64 & Hash Utilities')">
+        <button class="nav-item" onclick="switchNav(event, 'tab-decoders', 'Decoders & Hashes')">
           <span>🔑</span> Decoders & Hashes
         </button>
       </nav>
     </div>
 
     <div class="sidebar-footer">
-      <div>nazein v0.2 • October 16, 2026</div>
+      <div>SOC Toolkit v0.4.1 • November 18, 2026</div>
       <div class="security-badge">🔒 In-Memory Only</div>
+      <button id="pwaUpdateBtn" class="update-btn" onclick="handleUpdateClick()" title="Check GitHub Pages for a newer version">
+        🔄 Check for Updates
+      </button>
     </div>
   </aside>
 
   <!-- Main Canvas -->
   <main>
     <header>
-      <h2 id="currentTabTitle" class="page-title">CSV Ticket Comments Extractor</h2>
-      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Mode">☀️</button>
+      <div class="header-left">
+        <button id="mobileMenuBtn" class="menu-toggle-btn" onclick="toggleDrawer(true)" aria-label="Open Menu">☰</button>
+        <h2 id="currentTabTitle" class="page-title">CSV Ticket Extractor</h2>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-danger" id="globalWipeBtn" onclick="wipeAllSessionMemory()" title="Clear all inputs and memory across all tabs">🧹 Wipe</button>
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Mode">☀️</button>
+      </div>
     </header>
 
     <div class="content-container">
@@ -365,7 +537,7 @@
                ondragover="handleDragOver(event)"
                ondragleave="handleDragLeave(event)"
                ondrop="handleDrop(event)">
-            <strong>📁 Click to select raw CSV export</strong> or drag & drop file here
+            <strong>📁 Select raw CSV export</strong> or drag & drop here
             <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleFile(this.files[0])">
           </div>
           
@@ -383,7 +555,6 @@
             <div class="filter-title">
               <span>Filter Comments By Author:</span>
               <div class="filter-buttons">
-                <button class="btn-sm" onclick="setPreset('siraj')">Siraj Only</button>
                 <button class="btn-sm" onclick="setPreset('all')">Select All</button>
                 <button class="btn-sm" onclick="setPreset('none')">Clear All</button>
               </div>
@@ -391,13 +562,13 @@
             <div id="checkboxGrid" class="checkbox-grid"></div>
           </div>
 
-          <div class="form-group" style="margin-top: 20px;">
+          <div class="form-group" style="margin-top: 18px;">
             <label for="resultArea">Cleaned Output</label>
             <textarea id="resultArea" placeholder="Cleaned output will appear here..." readonly></textarea>
           </div>
 
           <div class="actions-bar">
-            <button class="btn btn-primary" onclick="copyTextById('resultArea')">📋 Copy Output to Clipboard</button>
+            <button class="btn btn-primary" onclick="copyTextById('resultArea', this)">📋 Copy Output</button>
           </div>
         </div>
       </div>
@@ -442,7 +613,7 @@
                   </select>
                 </div>
 
-                <div style="display:flex; align-items:center; margin-top:15px;">
+                <div style="display:flex; align-items:center; margin-top:10px;">
                   <label class="checkbox-label">
                     <input type="checkbox" id="chkParentheses" onchange="buildCustomFormat()"> Parentheses (...)
                   </label>
@@ -453,11 +624,11 @@
             <div>
               <div class="form-group">
                 <label for="fmtOutput">Generated Query Output</label>
-                <textarea id="fmtOutput" readonly placeholder="Output will automatically generate here..." style="height: 380px;"></textarea>
+                <textarea id="fmtOutput" readonly placeholder="Output will automatically generate here..."></textarea>
               </div>
 
               <div class="actions-bar">
-                <button class="btn btn-primary" onclick="copyTextById('fmtOutput')">📋 Copy Formatted Output</button>
+                <button class="btn btn-primary" onclick="copyTextById('fmtOutput', this)">📋 Copy Output</button>
                 <button class="btn btn-secondary" onclick="clearFormatter()">Clear</button>
               </div>
             </div>
@@ -465,32 +636,34 @@
         </div>
       </div>
 
-      <!-- TAB 3: ANONYMIZER MODULE -->
+      <!-- TAB 3: ANONYMIZER & RESTORER MODULE -->
       <div id="tab-masking" class="panel">
         <div class="panel-card">
           <div class="form-group">
-            <label for="clientInput">Client / Entity Names to Hide (Comma Separated)</label>
-            <input type="text" id="clientInput" placeholder="Acme Corp, Client-Alpha, John Doe, Internal-Server-01">
+            <label for="clientInput">Entities / Strings to Mask (Comma Separated)</label>
+            <input type="text" id="clientInput" placeholder="Acme Corp, 10.20.30.40, John Doe, Internal-SRV-01">
           </div>
 
           <div class="form-group">
-            <label for="rawInput">Original / Raw Incident Data</label>
-            <textarea id="rawInput" placeholder="Paste sensitive log entries, email headers, or report drafts here..."></textarea>
+            <label for="rawInput">Input Text (Raw Data to Mask OR Masked Text to Restore)</label>
+            <textarea id="rawInput" placeholder="Paste sensitive logs/reports to sanitize, OR paste external sanitized text containing [CLIENT_ENTITY_X] tags here to restore..."></textarea>
           </div>
 
           <div class="actions-bar">
-            <button class="btn btn-primary" onclick="mockMask()">Sanitize / Mask</button>
-            <button class="btn btn-secondary" onclick="mockUnmask()">Restore Original</button>
-            <button class="btn btn-danger" onclick="mockClear()">Clear Memory</button>
+            <button class="btn btn-primary" onclick="sanitizeData()">🔒 Sanitize / Mask</button>
+            <button class="btn btn-secondary" onclick="restoreData()">🔓 Restore Original</button>
+            <button class="btn btn-danger" onclick="clearAnonymizer()">Clear Module</button>
           </div>
 
-          <div class="form-group" style="margin-top:20px;">
-            <label for="outputResult">Sanitized Output</label>
-            <textarea id="outputResult" readonly placeholder="Sanitized output will appear here..."></textarea>
+          <div id="maskStatusBanner" class="status-banner"></div>
+
+          <div class="form-group" style="margin-top:18px;">
+            <label for="outputResult">Processed Output (Editable)</label>
+            <textarea id="outputResult" placeholder="Sanitized or restored output will appear here..."></textarea>
           </div>
 
           <div class="actions-bar">
-            <button class="btn btn-primary" onclick="copyTextById('outputResult')">📋 Copy Sanitized Output</button>
+            <button class="btn btn-primary" onclick="copyTextById('outputResult', this)">📋 Copy Output</button>
           </div>
         </div>
       </div>
@@ -499,19 +672,19 @@
       <div id="tab-defang" class="panel">
         <div class="panel-card">
           <div class="form-group">
-            <label for="defangInput">Input IOCs / URLs</label>
-            <textarea id="defangInput" placeholder="Paste malicious URLs or IPs..."></textarea>
+            <label for="defangInput">Input IOCs / URLs / Narrative</label>
+            <textarea id="defangInput" placeholder="Paste malicious URLs, IPs, emails, or incident notes..."></textarea>
           </div>
           <div class="actions-bar">
-            <button class="btn btn-primary" onclick="mockDefang(true)">Defang (hxxp, [.])</button>
-            <button class="btn btn-secondary" onclick="mockDefang(false)">Refang</button>
+            <button class="btn btn-primary" onclick="processDefang(true)">Defang (hxxp, [.], [@])</button>
+            <button class="btn btn-secondary" onclick="processDefang(false)">Refang</button>
           </div>
-          <div class="form-group" style="margin-top:20px;">
+          <div class="form-group" style="margin-top:18px;">
             <label for="defangOutput">Output</label>
             <textarea id="defangOutput" readonly placeholder="Output will appear here..."></textarea>
           </div>
           <div class="actions-bar">
-            <button class="btn btn-primary" onclick="copyTextById('defangOutput')">📋 Copy Defang Output</button>
+            <button class="btn btn-primary" onclick="copyTextById('defangOutput', this)">📋 Copy Output</button>
           </div>
         </div>
       </div>
@@ -524,15 +697,16 @@
             <textarea id="decoderInput" placeholder="Paste Base64 payload or raw string..."></textarea>
           </div>
           <div class="actions-bar">
-            <button class="btn btn-primary" onclick="mockBase64(true)">Decode Base64</button>
-            <button class="btn btn-secondary" onclick="mockBase64(false)">Encode Base64</button>
+            <button class="btn btn-primary" onclick="processBase64(true)">Decode Base64</button>
+            <button class="btn btn-secondary" onclick="processBase64(false)">Encode Base64</button>
+            <button class="btn btn-secondary" onclick="generateHashes()">SHA-256 / SHA-1</button>
           </div>
-          <div class="form-group" style="margin-top:20px;">
-            <label for="decoderOutput">Resulting Payload</label>
-            <textarea id="decoderOutput" readonly placeholder="Resulting payload..."></textarea>
+          <div class="form-group" style="margin-top:18px;">
+            <label for="decoderOutput">Resulting Payload / Hashes</label>
+            <textarea id="decoderOutput" readonly placeholder="Resulting payload or hashes..."></textarea>
           </div>
           <div class="actions-bar">
-            <button class="btn btn-primary" onclick="copyTextById('decoderOutput')">📋 Copy Result Payload</button>
+            <button class="btn btn-primary" onclick="copyTextById('decoderOutput', this)">📋 Copy Result</button>
           </div>
         </div>
       </div>
@@ -541,6 +715,19 @@
   </main>
 
   <script>
+    // Mobile Drawer Controller
+    function toggleDrawer(open) {
+      const sidebar = document.getElementById('appSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (open) {
+        sidebar.classList.add('open');
+        backdrop.classList.add('open');
+      } else {
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('open');
+      }
+    }
+
     // Theme Toggle Controller
     function toggleTheme() {
       const htmlEl = document.documentElement;
@@ -552,15 +739,43 @@
       btn.innerText = newTheme === 'light' ? '🌙' : '☀️';
     }
 
-    // Universal Copy Utility
-    function copyTextById(elementId) {
+    // Universal Copy Utility with Visual Feedback
+    function copyTextById(elementId, btnEl) {
       const el = document.getElementById(elementId);
       if (!el || !el.value) return;
-      el.select();
-      navigator.clipboard.writeText(el.value);
+      navigator.clipboard.writeText(el.value).then(() => {
+        if (btnEl) {
+          const originalText = btnEl.innerText;
+          btnEl.innerText = '✅ Copied!';
+          setTimeout(() => { btnEl.innerText = originalText; }, 1500);
+        }
+      });
     }
 
-    // Navigation Control
+    // Global In-Memory Wipe
+    function wipeAllSessionMemory() {
+      parsedTickets = [];
+      entityStore = [];
+
+      document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+        el.value = '';
+      });
+
+      const fileInput = document.getElementById('csvFile');
+      if (fileInput) fileInput.value = '';
+
+      document.getElementById('checkboxGrid').innerHTML = '';
+      document.getElementById('filterPanel').style.display = 'none';
+      document.getElementById('progressContainer').style.display = 'none';
+      document.getElementById('maskStatusBanner').style.display = 'none';
+
+      const wipeBtn = document.getElementById('globalWipeBtn');
+      const orig = wipeBtn.innerText;
+      wipeBtn.innerText = '✅ Wiped';
+      setTimeout(() => { wipeBtn.innerText = orig; }, 1500);
+    }
+
+    // Navigation Control (Auto-closes mobile drawer)
     function switchNav(evt, tabId, titleText) {
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -568,6 +783,7 @@
       document.getElementById(tabId).classList.add('active');
       evt.currentTarget.classList.add('active');
       document.getElementById('currentTabTitle').innerText = titleText;
+      toggleDrawer(false);
     }
 
     // CSV Extractor Logic
@@ -652,9 +868,12 @@
         }
         if (ticketCol !== -1 && commentsCol !== -1) { headerRowIdx = r; break; }
       }
-      if (ticketCol === -1) ticketCol = 0;
-      if (commentsCol === -1) commentsCol = 18;
       if (headerRowIdx === -1) headerRowIdx = 0;
+      if (ticketCol === -1) ticketCol = 0;
+      if (commentsCol === -1) {
+        const detectedHeaders = rows[headerRowIdx].map(h => h.replace(/^"|"$/g, '').trim()).filter(Boolean).join(', ');
+        return `Error: Could not find a 'Comments' column. Detected headers: [${detectedHeaders || 'None'}]`;
+      }
 
       const ticketList = [];
       for (let i = headerRowIdx + 1; i < rows.length; i++) {
@@ -683,7 +902,19 @@
       authors.forEach(author => {
         const label = document.createElement('label');
         label.className = 'checkbox-item';
-        label.innerHTML = `<input type="checkbox" value="${author}" class="author-cb" checked onchange="renderFilteredOutput()"> <span>${author}</span>`;
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = author;
+        checkbox.className = 'author-cb';
+        checkbox.checked = true;
+        checkbox.addEventListener('change', renderFilteredOutput);
+
+        const span = document.createElement('span');
+        span.textContent = author;
+
+        label.appendChild(checkbox);
+        label.appendChild(span);
         grid.appendChild(label);
       });
       document.getElementById('filterPanel').style.display = 'block';
@@ -693,7 +924,6 @@
       document.querySelectorAll('.author-cb').forEach(cb => {
         if (type === 'all') cb.checked = true;
         if (type === 'none') cb.checked = false;
-        if (type === 'siraj') cb.checked = cb.value.toLowerCase().includes('siraj');
       });
       renderFilteredOutput();
     }
@@ -752,100 +982,298 @@
       document.getElementById('fmtOutput').value = '';
     }
 
-    // Anonymizer Module
-    let mockStore = [];
+    // Single-Pass Collision-Free Anonymizer & Restorer Module
+    let entityStore = [];
 
-    function mockMask() {
-      let rawText = document.getElementById('rawInput').value;
+    function showMaskStatus(msg, isError = false) {
+      const banner = document.getElementById('maskStatusBanner');
+      banner.style.display = 'block';
+      banner.textContent = msg;
+      banner.style.color = isError ? 'var(--google-red)' : 'var(--success-green)';
+      banner.style.borderColor = isError ? 'var(--danger-border)' : 'var(--success-border)';
+      banner.style.backgroundColor = isError ? 'var(--danger-bg)' : 'var(--success-bg)';
+    }
+
+    function sanitizeData() {
+      const rawText = document.getElementById('rawInput').value;
       const outputArea = document.getElementById('outputResult');
       
-      if (!rawText) {
-        outputArea.value = "Error: Raw input data is empty.";
+      if (!rawText.trim()) {
+        showMaskStatus("Error: Input text is empty.", true);
         return;
       }
       
-      mockStore = [];
       const clientInputVal = document.getElementById('clientInput').value;
-      const entities = clientInputVal.split(',').map(e => e.trim()).filter(e => e.length > 0);
+      const rawEntities = clientInputVal.split(',').map(e => e.trim()).filter(e => e.length > 0);
+      const seenLower = new Set();
+      const entities = [];
+      for (const ent of rawEntities) {
+        if (!seenLower.has(ent.toLowerCase())) {
+          seenLower.add(ent.toLowerCase());
+          entities.push(ent);
+        }
+      }
       
       if (entities.length === 0) {
-        outputArea.value = "Error: Please specify at least one client/entity name to mask.";
+        showMaskStatus("Error: Specify at least one entity name to mask.", true);
         return;
       }
 
       entities.sort((a, b) => b.length - a.length);
 
-      let maskedText = rawText;
+      entityStore = [];
+      const lookup = new Map();
+      const usedIndices = new Set();
+
       entities.forEach((entity, idx) => {
         const placeholder = `[CLIENT_ENTITY_${idx + 1}]`;
-        const escapedEntity = entity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(escapedEntity, 'gi');
-        
-        let matches = maskedText.match(regex);
-        if (matches && matches.length > 0) {
-          maskedText = maskedText.replace(regex, placeholder);
-          mockStore.push({ placeholder, original: entity });
-        }
+        lookup.set(entity.toLowerCase(), { placeholder, original: entity, idx });
+      });
+
+      const combinedPattern = entities.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      const masterRegex = new RegExp(combinedPattern, 'gi');
+      let totalReplacements = 0;
+
+      const maskedText = rawText.replace(masterRegex, (matched) => {
+        const entry = lookup.get(matched.toLowerCase());
+        if (!entry) return matched;
+        usedIndices.add(entry.idx);
+        totalReplacements++;
+        return entry.placeholder;
+      });
+
+      Array.from(usedIndices).sort((a, b) => a - b).forEach(idx => {
+        const ent = entities[idx];
+        entityStore.push({ placeholder: `[CLIENT_ENTITY_${idx + 1}]`, original: ent });
       });
 
       outputArea.value = maskedText;
-      if (mockStore.length === 0) {
-        outputArea.value += "\n\n[Notice: None of the specified entities were found in the raw text.]";
+
+      if (totalReplacements > 0) {
+        showMaskStatus(`🔒 Masked ${totalReplacements} occurrence(s) across ${entityStore.length} entity rule(s).`);
+      } else {
+        showMaskStatus("Notice: None of the specified entities were found in the input text.", true);
       }
     }
 
-    function mockUnmask() {
-      let text = document.getElementById('outputResult').value;
+    function restoreData() {
       const outputArea = document.getElementById('outputResult');
-      
-      if (!text) {
-        outputArea.value = "Error: Output result is empty.";
-        return;
+      const rawArea = document.getElementById('rawInput');
+
+      let sourceText = outputArea.value;
+      if (!/\[CLIENT_ENTITY_\d+\]/i.test(sourceText) && /\[CLIENT_ENTITY_\d+\]/i.test(rawArea.value)) {
+        sourceText = rawArea.value;
       }
-      if (mockStore.length === 0) {
-        outputArea.value = "Error: No active sanitization session memory found. Please mask data first.";
+
+      if (!sourceText.trim()) {
+        showMaskStatus("Error: No text found to restore.", true);
         return;
       }
 
-      mockStore.forEach(item => {
+      let activeMap = [...entityStore];
+      if (activeMap.length === 0) {
+        const clientInputVal = document.getElementById('clientInput').value;
+        const rawEntities = clientInputVal.split(',').map(e => e.trim()).filter(e => e.length > 0);
+        const seenLower = new Set();
+        const entities = [];
+        for (const ent of rawEntities) {
+          if (!seenLower.has(ent.toLowerCase())) {
+            seenLower.add(ent.toLowerCase());
+            entities.push(ent);
+          }
+        }
+        entities.sort((a, b) => b.length - a.length);
+        entities.forEach((entity, idx) => {
+          activeMap.push({ placeholder: `[CLIENT_ENTITY_${idx + 1}]`, original: entity });
+        });
+      }
+
+      if (activeMap.length === 0) {
+        showMaskStatus("Error: No active session memory or entity list found to map placeholders back.", true);
+        return;
+      }
+
+      activeMap.sort((a, b) => b.placeholder.length - a.placeholder.length);
+
+      let restoredText = sourceText;
+      let restoredCount = 0;
+
+      activeMap.forEach(item => {
         const escapedPlaceholder = item.placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(escapedPlaceholder, 'g');
-        text = text.replace(regex, item.original);
+        const regex = new RegExp(escapedPlaceholder, 'gi');
+        const matches = restoredText.match(regex);
+        if (matches && matches.length > 0) {
+          restoredText = restoredText.replace(regex, () => item.original);
+          restoredCount += matches.length;
+        }
       });
 
-      outputArea.value = text;
+      outputArea.value = restoredText;
+
+      if (restoredCount > 0) {
+        showMaskStatus(`🔓 Restored ${restoredCount} placeholder(s) back to original values.`);
+      } else {
+        showMaskStatus("Notice: No matching [CLIENT_ENTITY_X] tags were found to restore.", true);
+      }
     }
 
-    function mockClear() {
-      mockStore = [];
+    function clearAnonymizer() {
+      entityStore = [];
       document.getElementById('clientInput').value = '';
       document.getElementById('rawInput').value = '';
       document.getElementById('outputResult').value = '';
+      document.getElementById('maskStatusBanner').style.display = 'none';
     }
 
-    function mockDefang(defang) {
+    // Smart IOC Defang / Refang (Protocols, Emails, IPv4, Subdomains & Domains)
+    function processDefang(defang) {
       let text = document.getElementById('defangInput').value;
-      text = defang ? text.replace(/http/gi, "hxxp").replace(/\./g, "[.]") : text.replace(/hxxp/gi, "http").replace(/\[\.\]/g, ".");
+      if (!text) return;
+
+      if (defang) {
+        text = text.replace(/\bhttps?:\/\//gi, match => match.toLowerCase().replace('http', 'hxxp'));
+        text = text.replace(/([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '$1[@]$2');
+        text = text.replace(/\b(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\b/g, '$1[.]$2[.]$3[.]$4');
+        text = text.replace(/\b((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(?=[\/:\s?#)\]"']|$)/g, match => match.replace(/\./g, '[.]'));
+      } else {
+        text = text.replace(/\bhxxp(s?):\/\//gi, 'http$1://');
+        text = text.replace(/\[@\]/g, '@');
+        text = text.replace(/\[\.\]/g, '.');
+      }
       document.getElementById('defangOutput').value = text;
     }
 
-    function mockBase64(decode) {
+    // UTF-8 Safe Base64 Encode/Decode
+    function processBase64(decode) {
       const input = document.getElementById('decoderInput').value;
+      if (!input) return;
       try {
-        document.getElementById('decoderOutput').value = decode ? atob(input) : btoa(input);
+        if (decode) {
+          const binary = atob(input.trim());
+          const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+          document.getElementById('decoderOutput').value = new TextDecoder().decode(bytes);
+        } else {
+          const bytes = new TextEncoder().encode(input);
+          const binary = Array.from(bytes, b => String.fromCharCode(b)).join('');
+          document.getElementById('decoderOutput').value = btoa(binary);
+        }
       } catch (e) {
-        document.getElementById('decoderOutput').value = "Error: Invalid Base64 string.";
+        document.getElementById('decoderOutput').value = "Error: Invalid Base64 input string.";
+      }
+    }
+
+    // Native Web Crypto SHA-256 & SHA-1 Hasher
+    async function generateHashes() {
+      const input = document.getElementById('decoderInput').value;
+      const out = document.getElementById('decoderOutput');
+      if (!input) {
+        out.value = "Error: Input payload is empty.";
+        return;
+      }
+      try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const [sha256Buf, sha1Buf] = await Promise.all([
+          crypto.subtle.digest('SHA-256', data),
+          crypto.subtle.digest('SHA-1', data)
+        ]);
+        const toHex = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        out.value = `SHA-256:\n${toHex(sha256Buf)}\n\nSHA-1:\n${toHex(sha1Buf)}`;
+      } catch (e) {
+        out.value = "Error generating hashes: " + e.message;
       }
     }
   </script>
 
-  <!-- PWA Service Worker Registration -->
+  <!-- PWA Service Worker & Controlled Update Manager -->
   <script>
+    let swRegistration = null;
+    let waitingWorker = null;
+
+    function setUpdateUI(state) {
+      const btn = document.getElementById('pwaUpdateBtn');
+      const mobileBtn = document.getElementById('mobileMenuBtn');
+      if (!btn) return;
+      btn.classList.remove('update-ready');
+      if (mobileBtn) mobileBtn.classList.remove('has-update');
+
+      if (state === 'checking') {
+        btn.textContent = '⏳ Checking updates...';
+      } else if (state === 'ready') {
+        btn.textContent = '🟢 New Version! Click to Update';
+        btn.classList.add('update-ready');
+        if (mobileBtn) mobileBtn.classList.add('has-update');
+      } else if (state === 'latest') {
+        btn.textContent = '✅ Up to date (v0.4.1)';
+        setTimeout(() => {
+          if (!waitingWorker) btn.textContent = '🔄 Check for Updates';
+        }, 2500);
+      } else if (state === 'offline') {
+        btn.textContent = '📴 Offline (Cached v0.4.1)';
+        setTimeout(() => {
+          if (!waitingWorker) btn.textContent = '🔄 Check for Updates';
+        }, 2500);
+      }
+    }
+
+    async function handleUpdateClick() {
+      if (waitingWorker) {
+        waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+        return;
+      }
+
+      if (!swRegistration) return;
+      if (!navigator.onLine) {
+        setUpdateUI('offline');
+        return;
+      }
+
+      setUpdateUI('checking');
+      try {
+        await swRegistration.update();
+        if (swRegistration.waiting) {
+          waitingWorker = swRegistration.waiting;
+          setUpdateUI('ready');
+        } else if (!swRegistration.installing) {
+          setTimeout(() => {
+            if (!waitingWorker && !swRegistration.installing) setUpdateUI('latest');
+          }, 1200);
+        }
+      } catch (e) {
+        setUpdateUI('offline');
+      }
+    }
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then((reg) => console.log('ServiceWorker registered successfully:', reg.scope))
-          .catch((err) => console.error('ServiceWorker registration failed:', err));
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
+          swRegistration = reg;
+
+          if (reg.waiting) {
+            waitingWorker = reg.waiting;
+            setUpdateUI('ready');
+          }
+
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                waitingWorker = newWorker;
+                setUpdateUI('ready');
+              }
+            });
+          });
+        }).catch((err) => console.error('ServiceWorker registration failed:', err));
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       });
     }
   </script>
