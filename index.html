@@ -19,6 +19,9 @@
       --success-green: #81c995;
       --success-bg: #0f2b1d;
       --success-border: #137333;
+      --warn-amber: #fbbf24;
+      --warn-bg: #2e2108;
+      --warn-border: #b45309;
       --input-bg: #0f172a;
       --btn-sec-bg: #334155;
       --btn-sec-hover: #475569;
@@ -39,6 +42,9 @@
       --success-green: #166534;
       --success-bg: #dcfce7;
       --success-border: #86efac;
+      --warn-amber: #92400e;
+      --warn-bg: #fef3c7;
+      --warn-border: #f59e0b;
       --input-bg: #f8fafc;
       --btn-sec-bg: #e2e8f0;
       --btn-sec-hover: #cbd5e1;
@@ -186,11 +192,8 @@
       transition: all 0.2s ease;
     }
 
-    .update-btn:hover {
-      background-color: var(--btn-sec-hover);
-    }
+    .update-btn:hover { background-color: var(--btn-sec-hover); }
 
-    /* Green state when newer version is detected */
     .update-btn.update-ready {
       background-color: var(--success-bg);
       color: var(--success-green);
@@ -248,7 +251,6 @@
       position: relative;
     }
 
-    /* Small green dot on mobile hamburger button when update is waiting */
     .menu-toggle-btn.has-update::after {
       content: '';
       position: absolute;
@@ -411,19 +413,125 @@
 
     .status-banner {
       font-size: 0.82rem;
-      padding: 8px 12px;
+      padding: 10px 12px;
       border-radius: 6px;
       margin-top: 12px;
       display: none;
       background: var(--bg-gray);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
+      line-height: 1.45;
     }
 
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
+    }
+
+    /* IP & CIDR Sub-Navigation & Compact Layout */
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sub-tab-btn {
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-gray);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sub-tab-btn:hover {
+      color: var(--text-main);
+      border-color: var(--google-blue);
+    }
+
+    .sub-tab-btn.active {
+      background: var(--google-blue);
+      color: #ffffff;
+      border-color: var(--google-blue);
+    }
+
+    .cidr-subpanel { display: none; }
+    .cidr-subpanel.active { display: block; }
+
+    .mode-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .mode-option {
+      flex: 1;
+      min-width: 210px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-gray);
+      cursor: pointer;
+    }
+
+    .mode-option input[type="radio"] {
+      margin-top: 3px;
+      accent-color: var(--google-blue);
+    }
+
+    .mode-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: block;
+    }
+
+    .mode-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .stat-box {
+      background: var(--bg-gray);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.4px;
+    }
+
+    .stat-value {
+      font-family: monospace;
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    .range-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
     }
 
     /* Compact Mobile & Narrow Viewport Layout (Off-Canvas Drawer) */
@@ -436,37 +544,16 @@
         transform: translateX(-100%);
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
       }
-      aside.open {
-        transform: translateX(0);
-      }
-      .menu-toggle-btn {
-        display: flex;
-      }
-      .close-drawer-btn {
-        display: block;
-      }
-      header {
-        padding: 10px 14px;
-      }
-      .page-title {
-        font-size: 1rem;
-      }
-      #globalWipeBtn {
-        padding: 7px 10px;
-        font-size: 0.8rem;
-      }
-      .content-container {
-        padding: 14px;
-      }
-      .panel-card {
-        padding: 14px;
-      }
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-      textarea {
-        height: 145px;
-      }
+      aside.open { transform: translateX(0); }
+      .menu-toggle-btn { display: flex; }
+      .close-drawer-btn { display: block; }
+      header { padding: 10px 14px; }
+      .page-title { font-size: 1rem; }
+      #globalWipeBtn { padding: 7px 10px; font-size: 0.8rem; }
+      .content-container { padding: 14px; }
+      .panel-card { padding: 14px; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      textarea { height: 145px; }
     }
   </style>
 </head>
@@ -493,6 +580,9 @@
         <button class="nav-item" onclick="switchNav(event, 'tab-formatter', 'Query & List Builder')">
           <span>⚡</span> Query & List Builder
         </button>
+        <button class="nav-item" onclick="switchNav(event, 'tab-cidr', 'IP & CIDR Tools')">
+          <span>🧮</span> IP & CIDR Tools
+        </button>
         <button class="nav-item" onclick="switchNav(event, 'tab-masking', 'Anonymizer & Restorer')">
           <span>🔒</span> Anonymizer & Restorer
         </button>
@@ -506,7 +596,7 @@
     </div>
 
     <div class="sidebar-footer">
-      <div>SOC Toolkit v0.4.1 • November 18, 2026</div>
+      <div>SOC Toolkit v0.5.3 • November 25, 2026</div>
       <div class="security-badge">🔒 In-Memory Only</div>
       <button id="pwaUpdateBtn" class="update-btn" onclick="handleUpdateClick()" title="Check GitHub Pages for a newer version">
         🔄 Check for Updates
@@ -573,14 +663,14 @@
         </div>
       </div>
 
-      <!-- TAB 2: QUERY BUILDER -->
+      <!-- TAB 2: QUERY & LIST BUILDER -->
       <div id="tab-formatter" class="panel">
         <div class="panel-card">
           <div class="dashboard-grid">
             <div>
               <div class="form-group">
                 <label for="fmtInput">Raw Input Items</label>
-                <textarea id="fmtInput" oninput="buildCustomFormat()" placeholder="Paste raw input here..."></textarea>
+                <textarea id="fmtInput" oninput="buildCustomFormat()" placeholder="Paste raw input here (newline, comma, or space separated)..."></textarea>
               </div>
 
               <label>Formatting Controls</label>
@@ -613,9 +703,12 @@
                   </select>
                 </div>
 
-                <div style="display:flex; align-items:center; margin-top:10px;">
+                <div style="display:flex; flex-direction:column; justify-content:center; gap:8px;">
                   <label class="checkbox-label">
                     <input type="checkbox" id="chkParentheses" onchange="buildCustomFormat()"> Parentheses (...)
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="chkRemoveDupes" onchange="buildCustomFormat()"> Remove Duplicates
                   </label>
                 </div>
               </div>
@@ -623,12 +716,13 @@
 
             <div>
               <div class="form-group">
-                <label for="fmtOutput">Generated Query Output</label>
+                <label for="fmtOutput" id="fmtOutputLabel">Generated Query Output</label>
                 <textarea id="fmtOutput" readonly placeholder="Output will automatically generate here..."></textarea>
               </div>
 
               <div class="actions-bar">
                 <button class="btn btn-primary" onclick="copyTextById('fmtOutput', this)">📋 Copy Output</button>
+                <button class="btn btn-secondary" onclick="dedupeFormatterInput()">🧹 Deduplicate Input</button>
                 <button class="btn btn-secondary" onclick="clearFormatter()">Clear</button>
               </div>
             </div>
@@ -636,7 +730,141 @@
         </div>
       </div>
 
-      <!-- TAB 3: ANONYMIZER & RESTORER MODULE -->
+      <!-- TAB 3: STREAMLINED IP & CIDR TOOLS -->
+      <div id="tab-cidr" class="panel">
+        <div class="panel-card">
+          <div class="sub-tabs">
+            <button class="sub-tab-btn active" onclick="switchCidrTab(event, 'cidr-sub-summarize')">🧮 CIDR Summarizer</button>
+            <button class="sub-tab-btn" onclick="switchCidrTab(event, 'cidr-sub-to-range')">📐 CIDR → IP Range</button>
+            <button class="sub-tab-btn" onclick="switchCidrTab(event, 'cidr-sub-from-range')">📏 IP Range → CIDR</button>
+          </div>
+
+          <!-- SUB-TAB A: CIDR SUMMARIZATION (EXACT VS FORCE /24) -->
+          <div id="cidr-sub-summarize" class="cidr-subpanel active">
+            <div class="mode-selector">
+              <label class="mode-option">
+                <input type="radio" name="cidrAggMode" value="exact" checked onchange="runCidrSummarize()">
+                <div>
+                  <span class="mode-title">🎯 Exact Aggregation (Lossless)</span>
+                  <span class="mode-desc">Smallest CIDR blocks covering ONLY supplied IPs.</span>
+                </div>
+              </label>
+              <label class="mode-option">
+                <input type="radio" name="cidrAggMode" value="force24" onchange="runCidrSummarize()">
+                <div>
+                  <span class="mode-title">🌐 Force /24 Grouping</span>
+                  <span class="mode-desc">Groups IPs into parent /24 subnets (includes unobserved hosts).</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="dashboard-grid">
+              <div>
+                <div class="form-group">
+                  <label for="cidrInputIps">Destination / Observed IPv4 Addresses</label>
+                  <textarea id="cidrInputIps" placeholder="Paste IPv4 addresses (newline, comma, space, or tab separated)..."></textarea>
+                </div>
+                <div class="actions-bar">
+                  <button class="btn btn-primary" onclick="runCidrSummarize()">⚡ Summarize IPs</button>
+                  <button class="btn btn-danger" onclick="clearCidrSummarize()">Clear</button>
+                </div>
+              </div>
+
+              <div>
+                <div class="form-group">
+                  <label for="cidrSummaryOutput" id="cidrOutLabel">Generated CIDR Blocks</label>
+                  <textarea id="cidrSummaryOutput" readonly placeholder="CIDR summary output will appear here..."></textarea>
+                </div>
+                <div class="actions-bar">
+                  <button class="btn btn-primary" onclick="copyTextById('cidrSummaryOutput', this)">📋 Copy CIDRs</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="cidrModeNotice" class="status-banner"></div>
+            <div id="cidrInvalidListBanner" class="status-banner"></div>
+          </div>
+
+          <!-- SUB-TAB B: CIDR TO IP RANGE -->
+          <div id="cidr-sub-to-range" class="cidr-subpanel">
+            <div class="form-group">
+              <label for="cidrSingleInput">CIDR Block (IPv4/Prefix, /0 to /32)</label>
+              <input type="text" id="cidrSingleInput" placeholder="e.g., 192.168.1.0/24 or 10.10.5.12/30" onkeydown="if(event.key==='Enter') runCidrToRange()">
+            </div>
+            <div class="actions-bar">
+              <button class="btn btn-primary" onclick="runCidrToRange()">📐 Calculate IP Range</button>
+              <button class="btn btn-secondary" onclick="copyCidrRangeDetails(this)">📋 Copy Details</button>
+              <button class="btn btn-danger" onclick="clearCidrToRange()">Clear</button>
+            </div>
+
+            <div id="cidrToRangeBanner" class="status-banner"></div>
+
+            <div class="range-details-grid">
+              <div class="stat-box">
+                <div class="stat-label">Network Address</div>
+                <div class="stat-value" id="rngNetwork">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Broadcast Address</div>
+                <div class="stat-value" id="rngBroadcast">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">First Usable Host</div>
+                <div class="stat-value" id="rngFirstHost">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Last Usable Host</div>
+                <div class="stat-value" id="rngLastHost">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Subnet Mask</div>
+                <div class="stat-value" id="rngNetmask">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Wildcard Mask</div>
+                <div class="stat-value" id="rngWildcard">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Total Addresses</div>
+                <div class="stat-value" id="rngTotalHosts">-</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Usable Hosts</div>
+                <div class="stat-value" id="rngUsableHosts">-</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-TAB C: IP RANGE TO CIDR -->
+          <div id="cidr-sub-from-range" class="cidr-subpanel">
+            <div class="dashboard-grid">
+              <div class="form-group">
+                <label for="rangeStartIp">Start IPv4 Address</label>
+                <input type="text" id="rangeStartIp" placeholder="e.g., 192.168.1.10">
+              </div>
+              <div class="form-group">
+                <label for="rangeEndIp">End IPv4 Address</label>
+                <input type="text" id="rangeEndIp" placeholder="e.g., 192.168.1.25">
+              </div>
+            </div>
+            <div class="actions-bar">
+              <button class="btn btn-primary" onclick="runRangeToCidr()">📏 Convert Range to CIDR</button>
+              <button class="btn btn-danger" onclick="clearRangeToCidr()">Clear</button>
+            </div>
+            <div id="rangeToCidrBanner" class="status-banner"></div>
+            <div class="form-group" style="margin-top: 16px;">
+              <label for="rangeToCidrOutput">Exact Covering CIDR Blocks</label>
+              <textarea id="rangeToCidrOutput" readonly placeholder="Exact minimal CIDR blocks covering the IP range will appear here..."></textarea>
+            </div>
+            <div class="actions-bar">
+              <button class="btn btn-primary" onclick="copyTextById('rangeToCidrOutput', this)">📋 Copy CIDR Blocks</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 4: ANONYMIZER & RESTORER MODULE -->
       <div id="tab-masking" class="panel">
         <div class="panel-card">
           <div class="form-group">
@@ -668,7 +896,7 @@
         </div>
       </div>
 
-      <!-- TAB 4: DEFANG / REFANG MODULE -->
+      <!-- TAB 5: DEFANG / REFANG MODULE -->
       <div id="tab-defang" class="panel">
         <div class="panel-card">
           <div class="form-group">
@@ -689,7 +917,7 @@
         </div>
       </div>
 
-      <!-- TAB 5: DECODERS & HASHES MODULE -->
+      <!-- TAB 6: DECODERS & HASHES MODULE -->
       <div id="tab-decoders" class="panel">
         <div class="panel-card">
           <div class="form-group">
@@ -767,7 +995,12 @@
       document.getElementById('checkboxGrid').innerHTML = '';
       document.getElementById('filterPanel').style.display = 'none';
       document.getElementById('progressContainer').style.display = 'none';
-      document.getElementById('maskStatusBanner').style.display = 'none';
+      document.querySelectorAll('.status-banner').forEach(b => { b.style.display = 'none'; });
+
+      clearCidrSummarize();
+      clearCidrToRange();
+      clearRangeToCidr();
+      document.getElementById('fmtOutputLabel').textContent = 'Generated Query Output';
 
       const wipeBtn = document.getElementById('globalWipeBtn');
       const orig = wipeBtn.innerText;
@@ -786,7 +1019,9 @@
       toggleDrawer(false);
     }
 
-    // CSV Extractor Logic
+    // ==========================================
+    // MODULE 1: CSV EXTRACTOR LOGIC
+    // ==========================================
     let parsedTickets = [];
 
     function handleDragOver(e) { e.preventDefault(); e.stopPropagation(); document.getElementById('uploadBox').classList.add('dragover'); }
@@ -944,11 +1179,25 @@
       document.getElementById('resultArea').value = outputText.trim() || "No authors selected.";
     }
 
-    // Query Builder Logic
+    // ==========================================
+    // MODULE 2: QUERY & LIST BUILDER (WITH DEDUPE)
+    // ==========================================
     function buildCustomFormat() {
       const rawText = document.getElementById('fmtInput').value;
-      const items = rawText.split(/[\n,\s]+/).map(i => i.trim()).filter(i => i.length > 0);
-      if (items.length === 0) { document.getElementById('fmtOutput').value = ''; return; }
+      const outLabel = document.getElementById('fmtOutputLabel');
+      let items = rawText.split(/[\n,\s]+/).map(i => i.trim()).filter(i => i.length > 0);
+      if (items.length === 0) {
+        document.getElementById('fmtOutput').value = '';
+        outLabel.textContent = 'Generated Query Output';
+        return;
+      }
+
+      const totalCount = items.length;
+      const uniqueCount = new Set(items).size;
+      const removeDupes = document.getElementById('chkRemoveDupes').checked;
+      if (removeDupes) {
+        items = [...new Set(items)];
+      }
 
       const quoteOpt = document.getElementById('optQuote').value;
       const delimOpt = document.getElementById('optDelimiter').value;
@@ -975,14 +1224,363 @@
       let result = processed.join(separator);
       if (wrapParens) result = `(${result})`;
       document.getElementById('fmtOutput').value = result;
+
+      const removedCount = totalCount - items.length;
+      if (removeDupes && removedCount > 0) {
+        outLabel.textContent = `Generated Query Output (${items.length} unique, ${removedCount} duplicate(s) removed)`;
+      } else if (!removeDupes && uniqueCount < totalCount) {
+        outLabel.textContent = `Generated Query Output (${totalCount} items, ${totalCount - uniqueCount} duplicate(s) present)`;
+      } else {
+        outLabel.textContent = `Generated Query Output (${items.length} item(s))`;
+      }
+    }
+
+    function dedupeFormatterInput() {
+      const inputEl = document.getElementById('fmtInput');
+      const items = inputEl.value.split(/[\n,\s]+/).map(i => i.trim()).filter(i => i.length > 0);
+      if (items.length === 0) return;
+      inputEl.value = [...new Set(items)].join('\n');
+      buildCustomFormat();
     }
 
     function clearFormatter() {
       document.getElementById('fmtInput').value = '';
       document.getElementById('fmtOutput').value = '';
+      document.getElementById('fmtOutputLabel').textContent = 'Generated Query Output';
     }
 
-    // Single-Pass Collision-Free Anonymizer & Restorer Module
+    // ==========================================
+    // MODULE 3: STREAMLINED IP & CIDR TOOLS
+    // ==========================================
+    function switchCidrTab(evt, subPanelId) {
+      document.querySelectorAll('.cidr-subpanel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subPanelId).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
+
+    function ipv4ToInt(ipStr) {
+      if (typeof ipStr !== 'string') return null;
+      const trimmed = ipStr.trim();
+      const parts = trimmed.split('.');
+      if (parts.length !== 4) return null;
+
+      let result = 0;
+      for (let i = 0; i < 4; i++) {
+        const part = parts[i];
+        if (!/^\d{1,3}$/.test(part)) return null;
+        if (part.length > 1 && part.startsWith('0')) return null;
+        const num = Number(part);
+        if (num < 0 || num > 255) return null;
+        result = ((result << 8) | num) >>> 0;
+      }
+      return result >>> 0;
+    }
+
+    function intToIpv4(intVal) {
+      const u = intVal >>> 0;
+      return [
+        (u >>> 24) & 0xff,
+        (u >>> 16) & 0xff,
+        (u >>> 8) & 0xff,
+        u & 0xff
+      ].join('.');
+    }
+
+    function prefixToMask(prefix) {
+      if (prefix === 0) return 0;
+      return (0xffffffff << (32 - prefix)) >>> 0;
+    }
+
+    function exactAggregateInts(sortedUniqueInts) {
+      if (sortedUniqueInts.length === 0) return [];
+      let blocks = sortedUniqueInts.map(ip => ({ net: ip >>> 0, prefix: 32 }));
+
+      let merged = true;
+      while (merged) {
+        merged = false;
+        const nextBlocks = [];
+        let i = 0;
+        while (i < blocks.length) {
+          if (i + 1 < blocks.length && blocks[i].prefix === blocks[i + 1].prefix && blocks[i].prefix > 0) {
+            const p = blocks[i].prefix;
+            const hostBits = 32 - p;
+            const blockSize = Math.pow(2, hostBits);
+            const parentMask = prefixToMask(p - 1);
+            if (((blocks[i].net & parentMask) >>> 0) === blocks[i].net &&
+                ((blocks[i + 1].net - blocks[i].net) === blockSize)) {
+              nextBlocks.push({ net: blocks[i].net, prefix: p - 1 });
+              i += 2;
+              merged = true;
+              continue;
+            }
+          }
+          nextBlocks.push(blocks[i]);
+          i += 1;
+        }
+        blocks = nextBlocks;
+      }
+      return blocks;
+    }
+
+    // Safe 64-bit JS Number boundary check to prevent 32-bit wrap-around infinite loops at 255.255.255.255
+    function rangeToCidrs(startInt, endInt) {
+      let start = Number(startInt >>> 0);
+      const end = Number(endInt >>> 0);
+      const cidrs = [];
+
+      while (start <= end) {
+        let maxAlignBits = 32;
+        if (start === 0) {
+          maxAlignBits = 0;
+        } else {
+          let tz = 0;
+          let temp = start >>> 0;
+          while ((temp & 1) === 0 && tz < 32) {
+            tz++;
+            temp >>>= 1;
+          }
+          maxAlignBits = 32 - tz;
+        }
+
+        const remaining = (end - start) + 1;
+        const maxRangeBits = 32 - Math.floor(Math.log2(remaining));
+        const prefix = Math.max(maxAlignBits, maxRangeBits);
+
+        cidrs.push({ net: start >>> 0, prefix });
+        const blockSize = Math.pow(2, 32 - prefix);
+        start += blockSize;
+      }
+      return cidrs;
+    }
+
+    function parseIpTokens(rawText) {
+      const tokens = rawText.split(/[\n,\s\t;]+/).map(t => t.trim()).filter(t => t.length > 0);
+      const validSet = new Set();
+      const invalidTokens = [];
+
+      for (const tok of tokens) {
+        const ipInt = ipv4ToInt(tok);
+        if (ipInt === null) {
+          invalidTokens.push(tok);
+        } else {
+          validSet.add(ipInt);
+        }
+      }
+
+      const sortedUniqueInts = Array.from(validSet).sort((a, b) => a - b);
+      return { sortedUniqueInts, invalidTokens };
+    }
+
+    function setBanner(elId, msg, type = 'info') {
+      const el = document.getElementById(elId);
+      el.style.display = 'block';
+      el.textContent = msg;
+      if (type === 'error') {
+        el.style.color = 'var(--google-red)';
+        el.style.borderColor = 'var(--danger-border)';
+        el.style.backgroundColor = 'var(--danger-bg)';
+      } else if (type === 'warn') {
+        el.style.color = 'var(--warn-amber)';
+        el.style.borderColor = 'var(--warn-border)';
+        el.style.backgroundColor = 'var(--warn-bg)';
+      } else {
+        el.style.color = 'var(--success-green)';
+        el.style.borderColor = 'var(--success-border)';
+        el.style.backgroundColor = 'var(--success-bg)';
+      }
+    }
+
+    // A. CIDR Summarization (Clean Output + Minimal Inline Status)
+    function runCidrSummarize() {
+      const raw = document.getElementById('cidrInputIps').value;
+      const mode = document.querySelector('input[name="cidrAggMode"]:checked').value;
+      const outArea = document.getElementById('cidrSummaryOutput');
+      const outLabel = document.getElementById('cidrOutLabel');
+      const modeNotice = document.getElementById('cidrModeNotice');
+      const invalidBanner = document.getElementById('cidrInvalidListBanner');
+
+      if (!raw.trim()) {
+        clearCidrSummarize();
+        return;
+      }
+
+      const { sortedUniqueInts, invalidTokens } = parseIpTokens(raw);
+
+      let cidrBlocks = [];
+      if (mode === 'exact') {
+        cidrBlocks = exactAggregateInts(sortedUniqueInts);
+      } else {
+        const mask24 = prefixToMask(24);
+        const net24Set = new Set();
+        for (const ipInt of sortedUniqueInts) {
+          net24Set.add((ipInt & mask24) >>> 0);
+        }
+        cidrBlocks = Array.from(net24Set)
+          .sort((a, b) => a - b)
+          .map(net => ({ net, prefix: 24 }));
+      }
+
+      const formattedCidrs = cidrBlocks.map(b => `${intToIpv4(b.net)}/${b.prefix}`);
+      outArea.value = formattedCidrs.join('\n');
+      outLabel.textContent = `Generated CIDR Blocks (${sortedUniqueInts.length} IP → ${cidrBlocks.length} CIDR)`;
+
+      const totalRepresented = cidrBlocks.reduce((acc, b) => acc + Math.pow(2, 32 - b.prefix), 0);
+      const additionalIps = Math.max(0, totalRepresented - sortedUniqueInts.length);
+
+      if (mode === 'force24' && additionalIps > 0) {
+        setBanner(
+          'cidrModeNotice',
+          `⚠️ Force /24 Grouping: Includes ${additionalIps.toLocaleString()} additional unobserved IP(s) across ${cidrBlocks.length} /24 subnet(s).`,
+          'warn'
+        );
+      } else {
+        modeNotice.style.display = 'none';
+      }
+
+      if (invalidTokens.length > 0) {
+        const preview = invalidTokens.slice(0, 8).join(', ') + (invalidTokens.length > 8 ? ` (+${invalidTokens.length - 8} more)` : '');
+        setBanner('cidrInvalidListBanner', `❌ Ignored ${invalidTokens.length} invalid IP(s): ${preview}`, 'error');
+      } else {
+        invalidBanner.style.display = 'none';
+      }
+    }
+
+    function clearCidrSummarize() {
+      document.getElementById('cidrInputIps').value = '';
+      document.getElementById('cidrSummaryOutput').value = '';
+      document.getElementById('cidrOutLabel').textContent = 'Generated CIDR Blocks';
+      document.getElementById('cidrModeNotice').style.display = 'none';
+      document.getElementById('cidrInvalidListBanner').style.display = 'none';
+    }
+
+    // B. CIDR to IP Range
+    function runCidrToRange() {
+      const input = document.getElementById('cidrSingleInput').value.trim();
+      const match = input.match(/^(\d{1,3}(?:\.\d{1,3}){3})\/(\d{1,2})$/);
+      if (!match) {
+        setBanner('cidrToRangeBanner', 'Error: Enter a valid IPv4 CIDR notation (e.g., 192.168.1.0/24).', 'error');
+        return;
+      }
+
+      const ipInt = ipv4ToInt(match[1]);
+      const prefix = Number(match[2]);
+      if (ipInt === null || prefix < 0 || prefix > 32) {
+        setBanner('cidrToRangeBanner', 'Error: Invalid IPv4 address or prefix length (must be /0 to /32).', 'error');
+        return;
+      }
+
+      const mask = prefixToMask(prefix);
+      const wildcard = (~mask) >>> 0;
+      const network = (ipInt & mask) >>> 0;
+      const broadcast = (network | wildcard) >>> 0;
+      const totalAddrs = Math.pow(2, 32 - prefix);
+
+      let firstHost, lastHost, usableCount, note;
+      if (prefix === 32) {
+        firstHost = intToIpv4(network);
+        lastHost = intToIpv4(network);
+        usableCount = 1;
+        note = 'Single host route (/32).';
+      } else if (prefix === 31) {
+        firstHost = intToIpv4(network);
+        lastHost = intToIpv4(broadcast);
+        usableCount = 2;
+        note = 'RFC 3021 point-to-point link (/31): both addresses are usable hosts.';
+      } else if (prefix === 0) {
+        firstHost = '0.0.0.1';
+        lastHost = '255.255.255.254';
+        usableCount = totalAddrs - 2;
+        note = 'Default route (/0): encompasses the entire IPv4 address space.';
+      } else {
+        firstHost = intToIpv4((network + 1) >>> 0);
+        lastHost = intToIpv4((broadcast - 1) >>> 0);
+        usableCount = totalAddrs - 2;
+        note = ipInt !== network
+          ? `Note: Input IP ${match[1]} is a host inside network ${intToIpv4(network)}/${prefix}.`
+          : `Subnet ${intToIpv4(network)}/${prefix} (${firstHost} – ${lastHost}).`;
+      }
+
+      document.getElementById('rngNetwork').textContent = intToIpv4(network);
+      document.getElementById('rngBroadcast').textContent = intToIpv4(broadcast);
+      document.getElementById('rngFirstHost').textContent = firstHost;
+      document.getElementById('rngLastHost').textContent = lastHost;
+      document.getElementById('rngNetmask').textContent = intToIpv4(mask);
+      document.getElementById('rngWildcard').textContent = intToIpv4(wildcard);
+      document.getElementById('rngTotalHosts').textContent = totalAddrs.toLocaleString();
+      document.getElementById('rngUsableHosts').textContent = usableCount.toLocaleString();
+
+      setBanner('cidrToRangeBanner', `✅ ${note}`, 'info');
+    }
+
+    function copyCidrRangeDetails(btnEl) {
+      const net = document.getElementById('rngNetwork').textContent;
+      if (!net || net === '-') return;
+      const summary = [
+        `CIDR: ${document.getElementById('cidrSingleInput').value.trim()}`,
+        `Network: ${net}`,
+        `Broadcast: ${document.getElementById('rngBroadcast').textContent}`,
+        `Usable Range: ${document.getElementById('rngFirstHost').textContent} - ${document.getElementById('rngLastHost').textContent}`,
+        `Subnet Mask: ${document.getElementById('rngNetmask').textContent}`,
+        `Total Addresses: ${document.getElementById('rngTotalHosts').textContent}`
+      ].join('\n');
+      navigator.clipboard.writeText(summary).then(() => {
+        if (btnEl) {
+          const orig = btnEl.innerText;
+          btnEl.innerText = '✅ Copied!';
+          setTimeout(() => { btnEl.innerText = orig; }, 1500);
+        }
+      });
+    }
+
+    function clearCidrToRange() {
+      document.getElementById('cidrSingleInput').value = '';
+      document.getElementById('cidrToRangeBanner').style.display = 'none';
+      ['rngNetwork', 'rngBroadcast', 'rngFirstHost', 'rngLastHost', 'rngNetmask', 'rngWildcard', 'rngTotalHosts', 'rngUsableHosts'].forEach(id => {
+        document.getElementById(id).textContent = '-';
+      });
+    }
+
+    // C. IP Range to CIDR
+    function runRangeToCidr() {
+      const startStr = document.getElementById('rangeStartIp').value;
+      const endStr = document.getElementById('rangeEndIp').value;
+      const out = document.getElementById('rangeToCidrOutput');
+
+      const startInt = ipv4ToInt(startStr);
+      const endInt = ipv4ToInt(endStr);
+
+      if (startInt === null || endInt === null) {
+        setBanner('rangeToCidrBanner', 'Error: Both Start IP and End IP must be valid IPv4 addresses.', 'error');
+        out.value = '';
+        return;
+      }
+      if (startInt > endInt) {
+        setBanner('rangeToCidrBanner', 'Error: Start IP must be less than or equal to End IP.', 'error');
+        out.value = '';
+        return;
+      }
+
+      const cidrs = rangeToCidrs(startInt, endInt);
+      out.value = cidrs.map(c => `${intToIpv4(c.net)}/${c.prefix}`).join('\n');
+      const totalSpan = (endInt - startInt) + 1;
+      setBanner(
+        'rangeToCidrBanner',
+        `✅ Converted ${intToIpv4(startInt)} – ${intToIpv4(endInt)} (${totalSpan.toLocaleString()} exact IP) into ${cidrs.length} CIDR block(s).`,
+        'info'
+      );
+    }
+
+    function clearRangeToCidr() {
+      document.getElementById('rangeStartIp').value = '';
+      document.getElementById('rangeEndIp').value = '';
+      document.getElementById('rangeToCidrOutput').value = '';
+      document.getElementById('rangeToCidrBanner').style.display = 'none';
+    }
+
+    // ==========================================
+    // MODULE 4: ANONYMIZER & RESTORER MODULE
+    // ==========================================
     let entityStore = [];
 
     function showMaskStatus(msg, isError = false) {
@@ -1125,7 +1723,9 @@
       document.getElementById('maskStatusBanner').style.display = 'none';
     }
 
-    // Smart IOC Defang / Refang (Protocols, Emails, IPv4, Subdomains & Domains)
+    // ==========================================
+    // MODULE 5: SMART IOC DEFANG / REFANG
+    // ==========================================
     function processDefang(defang) {
       let text = document.getElementById('defangInput').value;
       if (!text) return;
@@ -1143,7 +1743,9 @@
       document.getElementById('defangOutput').value = text;
     }
 
-    // UTF-8 Safe Base64 Encode/Decode
+    // ==========================================
+    // MODULE 6: DECODERS & HASHES
+    // ==========================================
     function processBase64(decode) {
       const input = document.getElementById('decoderInput').value;
       if (!input) return;
@@ -1162,7 +1764,6 @@
       }
     }
 
-    // Native Web Crypto SHA-256 & SHA-1 Hasher
     async function generateHashes() {
       const input = document.getElementById('decoderInput').value;
       const out = document.getElementById('decoderOutput');
@@ -1204,12 +1805,12 @@
         btn.classList.add('update-ready');
         if (mobileBtn) mobileBtn.classList.add('has-update');
       } else if (state === 'latest') {
-        btn.textContent = '✅ Up to date (v0.4.1)';
+        btn.textContent = '✅ Up to date (v0.5.3)';
         setTimeout(() => {
           if (!waitingWorker) btn.textContent = '🔄 Check for Updates';
         }, 2500);
       } else if (state === 'offline') {
-        btn.textContent = '📴 Offline (Cached v0.4.1)';
+        btn.textContent = '📴 Offline (Cached v0.5.3)';
         setTimeout(() => {
           if (!waitingWorker) btn.textContent = '🔄 Check for Updates';
         }, 2500);
