@@ -1,4 +1,4 @@
-const CACHE_NAME = 'soc-toolkit-v0.4.1';
+const CACHE_NAME = 'soc-toolkit-v0.5.3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
